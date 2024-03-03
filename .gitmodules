@@ -1,0 +1,3 @@
+[submodule "PokeDocs"]
+	path = PokeDocs
+	url = https://github.com/pkZukan/PokeDocs/
