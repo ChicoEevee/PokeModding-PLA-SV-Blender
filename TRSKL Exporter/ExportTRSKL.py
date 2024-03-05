@@ -47,42 +47,6 @@ ry90n = Matrix.Rotation(radians(-90),4,'Y')
 rz90n = Matrix.Rotation(radians(-90),4,'Z')
 
 
-def is_zero_scale(matrix):
-    if (matrix[0][0] == 0.0) and (matrix[1][1] == 0) and (matrix[2][2] == 0):
-        return True
-    else:
-        return False
-
-def get_bone_local_transform(bone):
-    visible = True
-    armature = bone.id_data  # Assuming bone is part of an armature
-
-    if not armature:
-        return None  # If not part of an armature, return None or handle accordingly
-
-    parent_bone = armature.data.bones[bone.parent.name] if bone.parent else None
-
-    if parent_bone:
-        pose_parent = armature.pose.bones[parent_bone.name]
-        if is_zero_scale(pose_parent.matrix) or is_zero_scale(armature.matrix_world):
-            visible = False
-            matrix = Matrix()
-        else:
-            matrix = bone.matrix.copy()
-    else:
-        matrix = bone.matrix.copy()
-    return {"matrix": matrix}, visible
-def strflt(x):
-    return '{0:.6f}'.format(x)
-
-
-def strmtx(mtx):
-    out = Matrix([mtx[0], mtx[2], mtx[1], mtx[3]])
-    out.transpose()
-    out = Matrix([out[0], out[2], out[1], out[3]])
-    out.transpose()
-    return " ".join([strflt(e) for v in out for e in v])
-
 def is_bone_weighted(armature, bone_name):
     a = False
     for obj in bpy.data.objects:
@@ -142,11 +106,11 @@ def export_armature_matrix(armature_obj):
     mat_BlenderToSMD = ry90 @ rz90
     for posebone in armature_obj.pose.bones:
         inherit_position = 1  # Set tow 1 for example, you can modify this based on your requirements
-        matrix = posebone.matrix
         result = is_bone_weighted(armature_obj, posebone.name)
-        transform, visible = get_bone_local_transform(posebone)
-      
-        a = strmtx(transform["matrix"])
+        parent = posebone.parent
+        matrix = posebone.matrix.inverted() @ (armature_obj.matrix_world.inverted()
+                                                          @ armature_obj.matrix_world)
+
         if result == True:
             bones.append({
                     "inherit_position": inherit_position,
@@ -168,16 +132,15 @@ def export_armature_matrix(armature_obj):
                             "z": round(matrix[2][2], 6)
                         },
                         "w": {
-                            "x": float(a.split(" ")[7]),
-                            "y": float(a.split(" ")[3]),
-                            "z": float(a.split(" ")[11])
+                            "x": round(matrix[0][3], 6),
+                            "y": round(matrix[1][3], 6),
+                            "z": round(matrix[2][3], 6)
                         },
                         # THIS IS THE F - n trouble child
                     }})
 
-        parent = posebone.parent
         if result == True:
-            bone_index = armature_obj.data.bones.find(posebone.name) - 2
+            bone_index = armature_obj.data.bones.find(posebone.name)
         else:
             bone_index = -1
         # Get the parent index
