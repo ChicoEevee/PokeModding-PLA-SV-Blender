@@ -3,5 +3,5 @@
 
 # Appenders
 - Commands:
- - append_buffers.py blank_trinity_mesh_buffer.json <output_folder> <output_filename>.json
- - append_meshes.py blank_trinity_mesh.json <output_folder> <output_filename>.json (REMEMBER TO CHANGE BUFFER NAME IN THE INSIDE OF THE OUTPUTJSON)
+ - append_buffers.py -a blank_trinity_mesh_buffer.json <output_folder> <output_filename>.json
+ - append_meshes.py -a blank_trinity_mesh.json <output_folder> <output_filename>.json (REMEMBER TO CHANGE BUFFER NAME IN THE INSIDE OF THE OUTPUTJSON)
