@@ -1,5 +1,5 @@
 # operator_buffer_export.py
-- This has to be used on the Text Exporter, select the mesh you want to export and click the play button on Text Editor to start the Script
+- This has to be used on the Text Editor, select the mesh you want to export and click the play button on Text Editor to start the Script
 
 # Appenders
 - Commands:
